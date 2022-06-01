@@ -4,13 +4,14 @@ Data visualization dashboard for weightlifting, and potentially other exercise. 
 
 ## Features
 - Basic plots
-    - Weight, sleep, calorie tracking
-    - 1RM calculator tracking
-    - Volume calendar heat map
-    - Body part volume heat map
+    - Projected/Real max tracking, sleep, calorie tracking
+    - Volume heat map (1 day, 1 week, 1 month, 3 months, 1 year)
+    - Lift calendar
+- Customizable scatterplot for correlations
+
+## Additions
 - Instagram story style daily recaps/info
 - Web-scraping based suggestions to create a newsfeed relevant to a user's progress
-- Customizable scatterplot for correlations
 
 ## Technology
 - React.js front end
