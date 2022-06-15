@@ -2,12 +2,11 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", { structuredData: true });
-  response.send("Hello from Firebase!");
-});
 
-exports.getLifts = functions.https.onRequest((request, response) => {
+const express = require("express");
+const app = express();
+
+app.get("/lifts", (request, response) => {
   admin
     .firestore()
     .collection("lifts")
@@ -22,7 +21,7 @@ exports.getLifts = functions.https.onRequest((request, response) => {
     .catch((err) => console.log(err));
 });
 
-exports.logLift = functions.https.onRequest((request, response) => {
+app.post("/lifts", (request, response) => {
   if (request.method != "POST") {
     return response.status(400).json({ error: "invalid request " });
   }
@@ -43,3 +42,5 @@ exports.logLift = functions.https.onRequest((request, response) => {
       console.error(err);
     });
 });
+
+exports.api = functions.https.onRequest(app);
