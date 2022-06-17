@@ -14,21 +14,23 @@ app.get("/lifts", (request, response) => {
     .then((data) => {
       let lifts = [];
       data.forEach((doc) => {
-        lifts.push(doc.data());
+        lifts.push({
+          liftId: doc.id,
+          exercises: doc.data().exercises,
+          date: doc.data().date,
+          userHandle: doc.data().userHandle
+        });
       });
       return response.json(lifts);
     })
     .catch((err) => console.log(err));
 });
 
-app.post("/lifts", (request, response) => {
-  if (request.method != "POST") {
-    return response.status(400).json({ error: "invalid request " });
-  }
+app.post("/lift", (request, response) => {
   const newLift = {
     exercises: request.body.exercises,
     userHandle: request.body.userHandle,
-    date: admin.firestore.Timestamp.fromDate(new Date()),
+    date: new Date().toISOString()
   };
   admin
     .firestore()
