@@ -7,13 +7,13 @@ admin.initializeApp();
 
 //express setup
 const express = require("express");
+const e = require("express");
 const app = express();
+const db = admin.firestore();
 
 //API routes
 app.get("/lifts", (request, response) => {
-  admin
-    .firestore()
-    .collection("lifts")
+  db.collection("lifts")
     .get()
     .then((data) => {
       let lifts = [];
@@ -36,9 +36,7 @@ app.post("/lift", (request, response) => {
     userHandle: request.body.userHandle,
     date: new Date().toISOString(),
   };
-  admin
-    .firestore()
-    .collection("lifts")
+  db.collection("lifts")
     .add(newLift)
     .then((doc) => {
       response.json({ message: `document ${doc.id} created successfully` });
@@ -57,18 +55,25 @@ app.post("/signup", (req, res) => {
     handle: req.body.handle,
   };
 
-  admin
-    .auth()
-    .createUser({
-      email: newUser.email,
-      emailVerified: false,
-      password: newUser.password,
-      handle: newUser.handle,
+  db.doc(`/users/${newUser.handle}`)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        return res.status(400).json({ handle: "this handle is already taken" });
+      } else {
+        return admin.auth().createUser({
+          email: newUser.email,
+          emailVerified: false,
+          password: newUser.password,
+          handle: newUser.handle,
+        });
+      }
     })
     .then((data) => {
-      return res
-        .status(201)
-        .json({ message: `user ${data.uid} signed up successfully` });
+      return data.user.getIdToken();
+    })
+    .then((token) => {
+      return res.status(201).json({ token });
     })
     .catch((err) => {
       console.error(err);
