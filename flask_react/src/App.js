@@ -1,38 +1,23 @@
-import { useState } from 'react'
-import axios from "axios";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import DashPage from "./pages/DashPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
-function App() {
-
-  const [liftData, setLiftData] = useState(null)
-
-    function getLifts() {
-      axios({
-        method: "GET",
-        url:"/lifts",
-      })
-      .then((response) => {
-        const res =response.data
-        setLiftData(({
-          lifts: res.lifts}))
-      }).catch((error) => {
-        if (error.response) {
-          console.log(error.response)
-          console.log(error.response.status)
-          console.log(error.response.headers)
-          }
-      })}
-
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <button onClick={getLifts}>Lifts</button>
-        {liftData && <div>
-              <p>{liftData.lifts}</p>
-            </div>
-        }
-      </header>
-    </div>
+    <Router>
+      <Switch>
+        <Route exact path="/" component={LoginPage} />
+        <Route exact path="/login" component={LoginPage} />
+        <Route exact path="/register" component={RegisterPage} />
+        <Route exact path="/dashboard" component={DashPage} />
+        <Route exact={false} component={NotFoundPage} />
+      </Switch>
+    </Router>
   );
 }
 
-export default App;
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
