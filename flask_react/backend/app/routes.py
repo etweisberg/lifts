@@ -66,10 +66,43 @@ def modify_token():
     db.session.commit()
     return jsonify(msg=f"{ttype.capitalize()} token successfully revoked")
 
-# Database Operations
-@api.route('/lifts')
+# Querying exercise information
+@api.route('/lifts', methods=["GET"])
 @jwt_required()
 def lifts():
     user = User.query.get(get_jwt_identity())
-    response_body = {f"lifts_{user}": [l.body for l in user.lifts]}
+    response_body = {f"lifts_{user}": [l.id for l in user.lifts]}
     return response_body
+
+#Logging Lifts
+@api.route('/new-lift', methods=["POST"])
+@jwt_required()
+def new_lifts():
+    exercises = request.json
+    if not exercises:
+        return {'msg': 'No exercise information provided'}, 400
+    else:
+        exercise_objects = []
+        for e in exercises:
+            if not(e['sets'] and e['reps'] and e['weight']):
+                return {'msg': 'SRW info not provided'}, 400 
+            if not(e['identifier']):
+                return {'msg': 'Identifier not provided'}, 400 
+            e_obj = Exercise(
+                user_id = get_jwt_identity(),
+                srw_info = json.dumps({
+                    "sets": e['sets'],
+                    "reps": e['reps'],
+                    "weight": e['weight']
+                }),
+                exercise_identifier=e['identifier']
+            )
+            exercise_objects.append(e_obj)
+        db.session.add_all(exercise_objects)
+        l = Lift(
+            user_id = get_jwt_identity(),
+            exercises = exercise_objects
+        )
+        db.session.add(l)
+        db.session.commit()
+        return {'msg': f'Lift {l} succesfully created'}, 200
