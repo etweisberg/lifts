@@ -43,11 +43,11 @@ def signup():
 
 @api.route('/login', methods=["POST"])
 def create_token():
-    email = request.json.get("email", None)
+    username = request.json.get("username", None)
     password = request.json.get("password", None)
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(username=username).first()
     if not user:
-        return {"msg": "User with that email does not exist"}, 404
+        return {"msg": "User with that username does not exist"}, 404
     elif not user.check_password(password):
         return {"msg": "Wrong password"}, 401
     else:
@@ -71,7 +71,18 @@ def modify_token():
 @jwt_required()
 def lifts():
     user = User.query.get(get_jwt_identity())
-    response_body = {f"lifts_{user}": [l.id for l in user.lifts]}
+    response_body = {}
+    for l in user.lifts:
+        exercises = l.exercises
+        response_body[l.id] = [
+            {
+                "id": e.id,
+                "user_id": e.user_id,
+                "lift_id": e.lift_id,
+                "exericse_identifier": e.exercise_identifier,
+                "srw_info": e.srw_info,
+            } for e in exercises
+        ]
     return response_body
 
 #Logging Lifts

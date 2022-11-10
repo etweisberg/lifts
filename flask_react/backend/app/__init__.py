@@ -3,11 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 #base level isntantiation
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 api = Flask(__name__)
+CORS(api)
 
 #JWT Used for Auth Workflow
 api.config["JWT_SECRET_KEY"] = "{\"$)IU+/bsy3C2;"
