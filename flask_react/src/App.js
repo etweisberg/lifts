@@ -18,7 +18,7 @@ export default function App() {
       <Routes>
         <Route exact path="/" element={token ? <DashPage /> : <LoginPage />} />
         <Route exact path="/login" element={<LoginPage />} />
-        <Route exact path="/register" element={token ? <RegisterPage />: <LoginPage />} />
+        <Route exact path="/register" element={<RegisterPage />} />
         <Route exact path="/dashboard" element={token ? <DashPage />: <LoginPage />} />
         <Route exact path="/log-lift" element={token ? <LiftLogPage />: <LoginPage />} />
         <Route exact path="/create-exercise" element={token ? <CreateExercisePage />: <LoginPage />} />
