@@ -1,12 +1,13 @@
 import React from "react";
-import AuthService from "../services/auth.service";
+import { withRouter } from "../common/with-router";
+import authService from "../services/auth.service";
 
-async function logMeIn(){
-  const response = await AuthService.login("test", "1234");
-  console.log(response);
-}
+function LoginPage(props) {
+  async function logMeIn() {
+    await authService.login("test", "1234");
+    props.router.navigate("/dashboard");
+  }
 
-export default function LoginPage() {
   return (
     <div>
       Login Page
@@ -14,3 +15,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default withRouter(LoginPage);
