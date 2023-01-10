@@ -4,7 +4,6 @@ import DashPage from "./pages/DashPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LiftLogPage from "./pages/LiftLogPage";
-import CreateExercisePage from "./pages/CreateExercisePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import LogoutPage from "./pages/LogoutPage";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -31,7 +30,6 @@ export default function App() {
         <Route element={<ProtectedRoutesWrapper />}>
           <Route path="/dashboard" element={<DashPage />} />
           <Route path="/log-lift" element={<LiftLogPage />} />
-          <Route path="/create-exercise" element={<CreateExercisePage />} />
           <Route path="/logout" element={<LogoutPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />

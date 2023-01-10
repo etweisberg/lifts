@@ -5,8 +5,8 @@ from app.models import *
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, jwt_required
 
-@api.route('/')
 
+@api.route('/')
 # User Authentication
 @api.after_request
 def refresh_expiring_jwts(response):
@@ -18,12 +18,15 @@ def refresh_expiring_jwts(response):
             access_token = create_access_token(identity=get_jwt_identity())
             data = response.get_json()
             if type(data) is dict:
-                data["access_token"] = access_token 
+                data["access_token"] = access_token
                 response.data = json.dumps(data)
+        print(response)
         return response
     except (RuntimeError, KeyError):
+        print(response)
         # Case where there is not a valid JWT. Just return the original response
         return response
+
 
 @api.route('/signup', methods=["POST"])
 def signup():
@@ -35,25 +38,28 @@ def signup():
     if User.query.filter_by(username=username).first():
         return {"msg": "Username is taken"}, 409
     else:
-        u = User(username=username, email=email)   
+        u = User(username=username, email=email)
         u.set_password(password)
         db.session.add(u)
         db.session.commit()
         return {'msg': f"{u} succesfully created"}
 
+
 @api.route('/login', methods=["POST"])
 def create_token():
-    username = request.json.get("username", None)
+    email = request.json.get("email", None)
     password = request.json.get("password", None)
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(email=email).first()
     if not user:
-        return {"msg": "User with that username does not exist"}, 404
+        return {"msg": "User with that email does not exist"}, 404
     elif not user.check_password(password):
         return {"msg": "Wrong password"}, 401
     else:
         access_token = create_access_token(identity=user.id)
-        response = {"access_token":access_token}
+        response = {"access_token": access_token,
+                    "user_id": user.id, "username": user.username}
         return response
+
 
 @api.route("/logout", methods=["DELETE"])
 @jwt_required(verify_type=False)
@@ -67,6 +73,8 @@ def modify_token():
     return jsonify(msg=f"{ttype.capitalize()} token successfully revoked")
 
 # Querying exercise information
+
+
 @api.route('/lifts', methods=["GET"])
 @jwt_required()
 def lifts():
@@ -85,7 +93,9 @@ def lifts():
         ]
     return response_body
 
-#Logging Lifts
+# Logging Lifts
+
+
 @api.route('/new-lift', methods=["POST"])
 @jwt_required()
 def new_lifts():
@@ -95,13 +105,13 @@ def new_lifts():
     else:
         exercise_objects = []
         for e in exercises:
-            if not(e['sets'] and e['reps'] and e['weight']):
-                return {'msg': 'SRW info not provided'}, 400 
-            if not(e['identifier']):
-                return {'msg': 'Identifier not provided'}, 400 
+            if not (e['sets'] and e['reps'] and e['weight']):
+                return {'msg': 'SRW info not provided'}, 400
+            if not (e['identifier']):
+                return {'msg': 'Identifier not provided'}, 400
             e_obj = Exercise(
-                user_id = get_jwt_identity(),
-                srw_info = json.dumps({
+                user_id=get_jwt_identity(),
+                srw_info=json.dumps({
                     "sets": e['sets'],
                     "reps": e['reps'],
                     "weight": e['weight']
@@ -111,8 +121,8 @@ def new_lifts():
             exercise_objects.append(e_obj)
         db.session.add_all(exercise_objects)
         l = Lift(
-            user_id = get_jwt_identity(),
-            exercises = exercise_objects
+            user_id=get_jwt_identity(),
+            exercises=exercise_objects
         )
         db.session.add(l)
         db.session.commit()

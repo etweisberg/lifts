@@ -8,12 +8,19 @@ function LogoutPage(props) {
     .logout()
     .then(() => {
       props.router.navigate("/login");
-      return { message: "Logged out" };
+      console.log({ message: "Logged out" });
     })
     .catch((err) => {
-      return { error: err };
+      props.router.navigate("/login");
+      console.log("error caught in logout page: " + err);
     });
-  return <Spinner animation="border" />;
+  return (
+    <div>
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <Spinner animation="border" className="p-2 align-self-center m-0" />
+      </div>
+    </div>
+  );
 }
 
 export default withRouter(LogoutPage);

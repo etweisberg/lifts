@@ -4,10 +4,10 @@ import authHeader from "./auth-header";
 const API_URL = "http://localhost:5000/";
 
 class AuthService {
-  async login(username, password) {
+  async login(email, password) {
     return axios
       .post(API_URL + "login", {
-        username,
+        email,
         password,
       })
       .then((response) => {
@@ -24,6 +24,11 @@ class AuthService {
       .then((response) => {
         localStorage.removeItem("user");
         return response.data;
+      })
+      .catch((err) => {
+        localStorage.removeItem("user");
+        console.log("error caught in auth service: " + err);
+        return err;
       });
   }
 
