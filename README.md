@@ -9,5 +9,6 @@
 - Flask
 - SQLAlchemy with SQLite database
 - React
+- JWT Authentication
 - Plotly.js
 - Auto-regressive time series model for predicting lift progress
